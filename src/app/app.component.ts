@@ -16,7 +16,7 @@ export class AppComponent {
   weatherSvc = inject(WeatherService)
 
   randNum$!: Observable<number>
-  weather$!: Observable<Weather>
+  weather$!: Promise<Weather>
   mainform!: FormGroup
   weatherform!: FormGroup
 

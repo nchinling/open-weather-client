@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, Subject, map, tap } from 'rxjs';
+import { Observable, Subject, lastValueFrom, map, tap } from 'rxjs';
 import { PersonData, ServerResponse, Weather } from '../models';
 
 
@@ -36,12 +36,13 @@ export class WeatherService {
     // sunset: string
     // mainWeather: string
     // description: string
-    getWeather(city:string): Observable<Weather> {
+    getWeather(city:string): Promise<Weather> {
 
       const qs = new HttpParams()
           .set('city', city)
       console.info('>>>>>>sending to Weather server...')
-      return this.http.get<Weather>(URL_API_WEATHER, { params: qs })
+      return lastValueFrom(
+        this.http.get<Weather>(URL_API_WEATHER, { params: qs })
           .pipe(
             tap(resp => this.onWeatherRequest.next(resp)),
             map(resp => ({ city: resp.city, temperature: resp.temperature, 
@@ -49,6 +50,7 @@ export class WeatherService {
                         sunset: resp.sunset, mainWeather: resp.mainWeather,
                         description: resp.description}))
           )
+      )
       }
 
   postDataAsJson(data: PersonData): Observable<ServerResponse> {
